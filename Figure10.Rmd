@@ -21,6 +21,17 @@ output:
 
 *** 
 
+```{r}
+library(ramp.falciparum)
+```
+
+```{r}
+foiP3 = list(hbar = 1, 
+             agePar = par_type2Age(), 
+             seasonPar = par_sinSeason(), 
+             trendPar = par_flatTrend())
+```
+
 ## Fig 10a
 
 ```{r}
