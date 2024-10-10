@@ -1,0 +1,138 @@
+---
+title: "Figure 8"
+subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
+output:
+  html_document: 
+    theme: simplex
+---
+
+***
+
+[Home](Memory.html) | 
+[Fig 4](Figure4.html) |
+[Fig 5](Figure5.html) |
+[Fig 6](Figure6.html) |
+[Fig 7](Figure7.html) |
+[Fig 8](Figure8.html) |
+[Fig 9](Figure9.html) |
+[Fig 10](Figure10.html)
+
+***
+
+# {.tabset}
+
+## $\odot$
+
+```{r}
+library(ramp.falciparum)
+library(viridisLite)
+library(knitr)
+```
+
+```{r, eval=F}
+purl("Figure8.Rmd", "Figure8.R")
+```
+
+```{r}
+foiP3 = list(hbar = 1, 
+             agePar = par_type2Age(), 
+             seasonPar = par_sinSeason(), 
+             trendPar = par_flatTrend())
+```
+```{r}
+redo=TRUE
+```
+
+```{r}
+if(redo == TRUE){
+  aa = seq(5, 5*365, by = 5)
+  meanP = sapply(aa, moments_clone_density, FoIpar=foiP3, hhat=5/365)
+  meanB = sapply(aa, moments_parasite_density, FoIpar=foiP3, hhat=5/365)
+  write.table(data.frame(P=meanP, B=meanB), "PB.txt")
+}
+
+PB = read.table("PB.txt")
+meanP = PB$P
+meanB = PB$B
+
+pFmu = par_Fmu_base()
+solve_dAoYda(5/365, foiP3, Amax=5*365, dt=5) -> hybrid
+tm = hybrid$time
+approxP = Fmu(hybrid$x, 0, pFmu)
+approxB = Fmu(hybrid$y, 0, pFmu)
+
+plot(aa, meanB, type = "l", ylim = c(0, 13), col = "darkred", 
+     xlab = "a - Cohort Age", 
+     ylab = expression(list(xi, paste(log[10], " Parasite Densities"))))
+lines(tm, approxB, col = "salmon3", lwd=2)
+lines(aa, meanP, type = "l", ylim = c(0, 13), col = "darkblue")
+lines(tm, approxP, col = "cyan4")
+mtext("Expected Densities Exactly vs. Hybrid Model Predictions", 3, 1, at=365)
+```
+
+## Fig 8a
+
+```{r}
+
+clrs8d = viridis(8)
+detectionColorPatch = function(xl=0, xh=13){
+  
+  xl = 0  
+  xh = 13  
+  meshX=seq(xl,xh,by=0.1)
+  
+  DD <- Detect(meshX, par_sample =par_nb())
+  CB <- t(sapply(meshX, d_counts_binned, bins=c(1:5, 13), par_sample=par_nb()))
+  
+  plot(meshX, CB[,1], type = "n", xlab =expression(log[10](B)), ylab = "Proportion", ylim = c(0,1), col = "white", xlim = c(xl, xh), xaxt = "n")
+  
+  cbi = 1-DD 
+  polygon(c(xl, meshX,13), 1-c(0, cbi,0), col = clrs8d[8], border=clrs8d[8]) 
+  
+  cb0 = cbi
+  cbi = CB[,1]
+  polygon(c(meshX, rev(meshX)), 1-c(cbi, rev(cb0)), col = clrs8d[7], border=clrs8d[7]) 
+  
+  for(i in 2:6){
+    cb0 = cbi
+    cbi = rowSums(CB[,1:i])
+    polygon(c(meshX, rev(meshX)), 1-c(cbi, rev(cb0)), col = clrs8d[8-i], border=clrs8d[8-i]) 
+  }  
+  
+  #cbi = 1-DD 
+  #polygon(c(xl, meshX), 1-c(0, cbi), col = "red", border=clrs8d[8]) 
+  
+  ssrt=62
+  ccx=1.2
+  text(4.5, 0.8, "Parasites not Detected", cex=ccx)
+  
+  text(7.3, .25, expression(1-10), col = "white", cex=ccx, srt = ssrt)
+  text(8.4, .25, expression(10-10^2), col = "white", cex=ccx, srt = ssrt)
+  text(9.4, .25, expression(10^2-10^3), col = "white", cex=ccx, srt = ssrt)
+  text(10.4, 0.25, expression(10^3-10^4), col = "white", cex=ccx, srt = ssrt)
+  text(11.4, .25, expression(10^4-10^5), col = "white", cex=ccx, srt = ssrt)
+  text(12.1, 0.2, expression(10^5-infinity), col = "white", cex=ccx, srt=ssrt)
+  axis(1, 1:12, 1:12)
+}
+detectionColorPatch()
+
+```
+
+## Fig 8b
+
+```{r}
+b2c = d_counts_binned(1, bins = c(1:5, 13), par_sample=par_nb())
+b2d = 1-d_detect(1,par_sample=par_nb())
+b2cl = c(b2d, b2c*(1-b2d))
+plot(3-0.05+c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2], xlim = c(2.5,11.5), xaxt = "n", xlab = expression(log[10](B)), ylab="Proportion") 
+for(i in c(4:11)){
+  b2c = d_counts_binned(i,bins = c(1:5, 13), par_sample=par_nb())
+  b2d = 1-d_detect(i,par_sample=par_nb())
+  b2cl = c(b2d, b2c*(1-b2d)) 
+  lines(i -0.05 + c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2])
+  axis(1, 3:11, 3:11)
+}
+```
+

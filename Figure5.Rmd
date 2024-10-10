@@ -1,0 +1,58 @@
+---
+title: "Figure 5"
+subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
+output:
+  html_document: 
+    theme: simplex
+---
+
+***
+
+[Home](Memory.html) | 
+[Fig 4](Figure4.html) |
+[Fig 5](Figure5.html) |
+[Fig 6](Figure6.html) |
+[Fig 7](Figure7.html) |
+[Fig 8](Figure8.html) |
+[Fig 9](Figure9.html) |
+[Fig 10](Figure10.html)
+
+*** 
+
+```{r, eval=F}
+purl("Figure5.Rmd", "Figure5.R")
+```
+
+```{r}
+
+nclrs = 29 
+clrs = rev(magma(nclrs))
+
+
+alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1){
+  alpha = seq(8, 400, by=2) 
+  Bmesh = seq(0.1, 12.9, by=0.1)
+  mesh = outer(Bmesh, alpha)*0
+  for(j in 1:length(alpha)){
+    pd = d_alpha2density(Bmesh, alpha[j], r, parD) 
+    mesh[,j] = pd
+  }
+  mesh 
+  list(pd=t(mesh), x=alpha, y=Bmesh)
+}
+
+pdObj = alpha2PD() 
+
+
+
+with(pdObj, filled.contour(x, y, pd, 
+                           xlab = expression(list(alpha, "Parasite Age (in Days)")), 
+                           ylab = expression(f[P](xi, alpha)), 
+                           xaxt = "n", 
+                           yaxt = "n", 
+                           nlevels=nclrs, 
+                           col = clrs))
+
+```

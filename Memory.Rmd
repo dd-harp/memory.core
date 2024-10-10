@@ -1,0 +1,25 @@
+---
+title: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
+subtitle: "github archive"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
+output:
+  html_document: 
+    theme: simplex
+---
+
+Each figure is created by it's own file. 
+
++ [Figure3.Rmd](Figure3.html)
+
++ [Figure4.Rmd](Figure4.html)
+
++ [Figure5.Rmd](Figure5.html)
+
++ [Figure6.Rmd](Figure6.html)
+
++ [Figure7.Rmd](Figure7.html)
+
++ [Figure8.Rmd](Figure8.html)
+
++ [Figure9.Rmd](Figure9.html)
