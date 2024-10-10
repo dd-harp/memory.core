@@ -1,27 +1,8 @@
----
-title: "Figure 5"
-subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
-output:
-  html_document: 
-    theme: simplex
----
+## ----eval=F---------------------------------------------------------------------------------------
+## purl("Figure5.Rmd", "Figure5.R")
 
-***
 
-[Home](Memory.html) | 
-[Fig 3](Figure3.html) |
-[Fig 4](Figure4.html) |
-[Fig 6](Figure6.html) |
-[Fig 7](Figure7.html) |
-[Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) |
-[Fig 10](Figure10.html)
-
-*** 
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 
 nclrs = 29 
 clrs = rev(magma(nclrs))
@@ -51,4 +32,4 @@ with(pdObj, filled.contour(x, y, pd,
                            nlevels=nclrs, 
                            col = clrs))
 
-```
+

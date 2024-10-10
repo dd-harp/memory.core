@@ -1,51 +1,21 @@
----
-title: "Figure 4"
-subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
-output:
-  html_document: 
-    theme: simplex
----
-
-***
-
-[Home](Memory.html) | 
-[Fig 3](Figure3.html) |
-[Fig 5](Figure5.html) |
-[Fig 6](Figure6.html) |
-[Fig 7](Figure7.html) |
-[Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) |
-[Fig 10](Figure10.html)
-
-*** 
-
-# {.tabset}
-
-## $\odot$ 
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 library(ramp.falciparum)
 library(viridisLite)
 library(knitr)
-```
 
-```{r, eval=F}
-purl("Figure4.Rmd", "Figure4.R")
-```
 
-```{r}
+## ----eval=F---------------------------------------------------------------------------------------
+## purl("Figure4.Rmd", "Figure4.R")
+
+
+## -------------------------------------------------------------------------------------------------
 foiP3 = list(hbar = 1, 
              agePar = par_type2Age(), 
              seasonPar = par_sinSeason(), 
              trendPar = par_flatTrend())
-```
 
 
-## Figure 4a 
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 nclrs = 25
 clrs = rev(magma(nclrs))
 
@@ -78,11 +48,9 @@ with(moiObj, filled.contour(x, y, moi,
 
 
 mtext("a) Multiplicity of Infection (MoI)", 3, 1, at = 220, cex=1)
-```
 
-## Figure 4b 
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 nclrs = 29 
 clrs = rev(magma(nclrs))
 
@@ -113,12 +81,9 @@ with(aoiObj, filled.contour(x, y, aoi,
 
 
 mtext("b) Age of Infection (AoI)", 3, 1, at=172, cex=1)
-```
-
-## Figure 4c
 
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 nclrs = 29 
 clrs = rev(magma(nclrs))
 
@@ -148,4 +113,4 @@ with(aoyObj, filled.contour(x, y, aoy,
                             col = clrs))
 
 mtext("c) Age of the Youngest Infection (AoY)", 3, 1, at=280, cex=1)
-```
+

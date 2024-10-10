@@ -1,32 +1,4 @@
----
-title: "Figure 9"
-subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
-output:
-  html_document: 
-    theme: simplex
----
-
-***
-
-[Home](Memory.html) | 
-[Fig 4](Figure4.html) |
-[Fig 5](Figure5.html) |
-[Fig 6](Figure6.html) |
-[Fig 7](Figure7.html) |
-[Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) | 
-[Fig 10](Figure10.html)
-
-*** 
-# {.tabset}
-
-## $\odot$ 
-
-## Fig 9a
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 
 clrs8d = viridis(8)
 detectionColorPatch = function(xl=0, xh=13){
@@ -69,13 +41,10 @@ detectionColorPatch = function(xl=0, xh=13){
   axis(1, 1:12, 1:12)
 }
 detectionColorPatch()
-mtext("a) Probability of Detection", 3, 1, at=1)
-```
 
 
-## Fig 9b
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 pp = par_nb(s=7)
 b2c = d_nz_counts_log_binned(1, bins = c(1:5, 13), pars=pp)
 b2d = 1-d_detect(1,pars=pp)
@@ -88,6 +57,4 @@ for(i in c(4:11)){
   lines(i -0.05 + c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2])
   axis(1, 3:11, 3:11)
 }
-mtext("b) Parasite Counts", 3, 1, at=2.9)
-```
 

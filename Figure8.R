@@ -1,47 +1,24 @@
----
-title: "Figure 8"
-subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
-output:
-  html_document: 
-    theme: simplex
----
-
-***
-
-[Home](Memory.html) | 
-[Fig 4](Figure4.html) |
-[Fig 5](Figure5.html) |
-[Fig 6](Figure6.html) |
-[Fig 7](Figure7.html) |
-[Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) |
-[Fig 10](Figure10.html)
-
-***
-
-# {.tabset}
-
-## $\odot$
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 library(ramp.falciparum)
 library(viridisLite)
 library(knitr)
-```
 
-```{r}
+
+## ----eval=F---------------------------------------------------------------------------------------
+## purl("Figure8.Rmd", "Figure8.R")
+
+
+## -------------------------------------------------------------------------------------------------
 foiP3 = list(hbar = 1, 
              agePar = par_type2Age(), 
              seasonPar = par_sinSeason(), 
              trendPar = par_flatTrend())
-```
-```{r}
-redo=TRUE
-```
 
-```{r}
+## -------------------------------------------------------------------------------------------------
+redo=TRUE
+
+
+## -------------------------------------------------------------------------------------------------
 if(redo == TRUE){
   aa = seq(5, 5*365, by = 5)
   meanP = sapply(aa, moments_clone_density, FoIpar=foiP3, hhat=5/365)
@@ -66,11 +43,9 @@ lines(tm, approxB, col = "salmon3", lwd=2)
 lines(aa, meanP, type = "l", ylim = c(0, 13), col = "darkblue")
 lines(tm, approxP, col = "cyan4")
 mtext("Expected Densities Exactly vs. Hybrid Model Predictions", 3, 1, at=365)
-```
 
-## Fig 8a
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 
 clrs8d = viridis(8)
 detectionColorPatch = function(xl=0, xh=13){
@@ -114,11 +89,9 @@ detectionColorPatch = function(xl=0, xh=13){
 }
 detectionColorPatch()
 
-```
 
-## Fig 8b
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 b2c = d_counts_binned(1, bins = c(1:5, 13), par_sample=par_nb())
 b2d = 1-d_detect(1,par_sample=par_nb())
 b2cl = c(b2d, b2c*(1-b2d))
@@ -130,5 +103,4 @@ for(i in c(4:11)){
   lines(i -0.05 + c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2])
   axis(1, 3:11, 3:11)
 }
-```
 

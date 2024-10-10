@@ -1,0 +1,221 @@
+---
+title: "Maximum Likelihood Fits to the Malaria Therapy Data"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+---
+
+
+
+```{r, echo=FALSE, purl=FALSE}
+library(knitr)
+library(ramp.falciparum)
+library(deSolve)
+library(viridisLite)
+library(viridis)
+```
+
+## Malaria Therapy
+
+We read in the malaria therapy data:  
+
+```{r}
+library(ramp.falciparum)
+```
+
+```{r}
+malariatherapy = read.csv("MT_PT_NP.csv")
+```
+
+We create two lists:
+
+1. The age of infection
+
+2. The parasite counts
+
+```{r}
+getOne = function(i, dta){
+   ix = which(!is.na(dta[,i]))
+   ix = ix[1:max(which(dta[ix,i]>0))]
+   cbind(alpha=ix+20, B=dta[ix,i])
+}
+vals = getOne(1, malariatherapy)
+
+for(i in 2:334) vals = rbind(vals,getOne(i, malariatherapy))
+alpha_list = vals[,1]
+counts_list = vals[,2]
+```
+
+## MLE 
+
+In the following, we present code to fit the parameters for two functions and the observational process: 
+
+1. $F_\mu,$ which describes mean $\log_{10}$ parasite density distributions as a function of the AoI, $\alpha.$ We fit two shape parameters.
+
+2. The parasite density distribution function, $\Omega(\mu).$ We fit parameters that describe the variance as a function of the mean. 
+
+3. We assume parasite counts follow a negative binomial distribution. 
+
+### $F_\mu$
+
+We let $F_\mu$ be the function
+
+$$
+F_\mu(\alpha) = 
+\begin{cases}
+    \text{NA} \ & \mbox{if } 0 \leq \alpha < 7 \\[10pt]
+      l + (b - l)  \frac{{\textstyle \alpha}}{{\textstyle \delta}}   & \mbox{if } 7 \leq \alpha \leq \delta  \\[10pt]
+     l + (b - l) e^{-s_\alpha (\alpha-\delta)}   & \mbox{if } \alpha \geq \delta\\  
+\end{cases}
+$$
+We want to fit values of $s_\alpha$ and $b$
+
+During fitting, random values could lead to nonsensical values, so we write a function $F_b$ to bound the value of $b$: 
+
+```{r constrained b, purl=F}
+F_b = function(x, bvm){
+  1.5 + exp(.2*x)/(1+exp(.2*x))*(bvm-3)
+}
+```
+
+Values between 1.5 and 11.5 are allowed: 
+
+```{r}
+c(F_b(-100, 13),F_b(100, 13))
+```
+
+Similarly, we want to constrain the parameter $s_\alpha$ to be between 0 and 1: 
+
+```{r}
+F_Sa = function(x){
+  exp(x)/(1+exp(x))
+}
+```
+
+
+### $\Omega(\mu)$
+
+In the following, we let $\Omega(\mu)$ be a modified $\beta$ distribution. The variance must be less than $\mu (1-\mu).$  We use the function 
+
+$$ 
+\sigma(\mu) = c_\sigma \mu^{1+b_\sigma}(1-\mu)^{1+a_\sigma}
+$$
+
+```{r}
+F_sigma = function(mu, aa=3.11, bb=2.14, cc=1.74){
+  pmin(abs(cc)*mu^(1+abs(bb))*(1-mu)^(1+abs(aa)), mu*(1-mu)) 
+}
+```
+
+### Counts 
+
+Here, we assume the counts follow a negative binomial distribution, parameterized with **mu** and **size**. 
+
+## Likelihood 
+
+We write a function to compute the log-likelihoood of a single observation, a pair of observations $\alpha_i$ and a count $\hat \xi_i.$ The probability of the count is a convolution over all possible values of $\xi$: 
+
+$$\int_0^b \Omega(\xi | F_\mu(\alpha_i)) C(\hat \xi_i | \xi) d\xi$$
+The log-likelihood for a single observation is computed using `llik_count` 
+
++ `count` is the count 
+
++ `mu` is the expected value for `xi` 
+
++ `sz` is the **size** parameter for `dnbinom`
+
++ `par_O` is a parameter list to dispatch `d_Omega`
+
++ `q` is the $\log_{10}$ number of RBCc blood sampled 
+
++ `bvm` is the $\log_{10}$ total number of RBCs 
+
+```{r}
+llik_count = function(count, mu, sz, par_O, q=6, bvm=13){
+ 
+  dB = function(xi, count, mu, q, bvm, sz, par_O){
+    pr_xi = d_Omega(xi, mu, bvm, par_O)
+    pr_count = dnbinom(count, mu=10^(xi-q), size=sz)
+    pr_xi*pr_count
+  }
+  
+  lik = integrate(dB, 0, bvm, 
+                  count=count, mu=mu,  
+                  q=q, bvm=bvm, 
+                  sz=sz, par_O=par_O)$value
+  -log(lik)
+}
+```
+
+The log-likelihood for all counts is computed with `llik_counts` 
+
++ `prms` is the set of values 
+
++ `alpha` is a list of the ages of infection 
+
++ `counts` is the corresponding list of the counts 
+
++ `par_Fm` is a parameter list to dispatch `Fmu`
+
++ `par_O` is a parameter list to dispatch `d_Omega`
+
++ `q` is the $\log_{10}$ number of RBCc blood sampled 
+
++ `bvm` is the $\log_{10}$ total number of RBCs 
+
+```{r}
+llik_counts = function(prms, alpha, counts, par_Fmu, par_O, q=6, bvm=13){
+  
+  llik_count_i = function(i, alpha, counts, sz, par_Fmu, par_O, q=6, bvm=13){
+    mu = Fmu(alpha[i], 0, par_Fmu) 
+    llik_count(counts[i], mu, sz, par_O, q, bvm)
+  }
+  
+  
+  par_Fmu$tildeb = F_b(prms[1], bvm)
+  par_Fmu$Sa = F_Sa(prms[2])
+  
+  par_O$pSig$aa=abs(prms[3])
+  par_O$pSig$bb=abs(prms[4])
+  par_O$pSig$cc=abs(prms[5])
+  sz=abs(prms[6])
+  
+  lliks = sapply(1:length(alpha), llik_count_i, 
+                 alpha=alpha, counts=counts, 
+                 sz=sz, par_Fmu=par_Fmu, par_O=par_O, 
+                 q=q, bvm=bvm) 
+  sum(lliks)
+}
+```
+
+
+The maximum likelihood estimation is computed by `counts_MLE` for a paired set set of observations c(`alpha`, `counts`) 
+
++ `q` is the $\log_{10}$ number of RBCc blood sampled 
+
++ `bvm` is the $\log_{10}$ total number of RBCs 
+
+```{r}
+counts_MLE = function(alpha, counts, q=6, bvm=13){
+  par_Fmu = par_Fmu_base()
+  par_O = par_Omega_beta()
+  par_O$pSig$cc = 1
+  pinit = c(tildecounts=10.5, Sa=1/30, aa=0.1, bb=0.1, cc=0.1, sz=0.1)
+  #nlm(countsllik, pinit, alpha=alpha, counts=counts, q=q)
+  out = optim(pinit, llik_counts, 
+              alpha=alpha, counts=counts, 
+              par_Fmu=par_Fmu, par_O=par_O, 
+              q=q, bvm=bvm)$par 
+  
+  c(F_b(out[1], 13), F_Sa(out[2]), abs(out[3]), abs(out[4]), abs(out[5]), abs(out[6]))
+}
+```
+
+
+
+
+Finally,
+
+```{r Fit it}
+counts_MLE(alpha_list, counts_list) -> fits
+fits
+```

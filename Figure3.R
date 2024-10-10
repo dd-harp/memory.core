@@ -1,37 +1,12 @@
----
-title: "Figure 3"
-subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
-output:
-  html_document: 
-    theme: simplex
----
-
-`Figure3.Rmd` 
-
-***
-
-[Home](Memory.html) | 
-[Fig 4](Figure4.html) |
-[Fig 5](Figure5.html) |
-[Fig 6](Figure6.html) |
-[Fig 7](Figure7.html) |
-[Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) |
-[Fig 10](Figure10.html) 
-
-*** 
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 library(ramp.falciparum)
 library(viridisLite)
-```
 
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 clrs = plasma(8)
 
+par(mfrow = c(1,2))
 
 par_t2 = par_type2Age() 
 
@@ -41,10 +16,8 @@ wt2 = ageFoI(a20yearsBy10days, par_flatAge())
 
 plot(a20yearsBy10days/365, wt1, type = "l", xlab = "Age in Years", ylab = expression(omega(a)), col = clrs[1])
 lines(a20yearsBy10days/365, wt2, col = clrs[5])
-```
 
 
-```{r}
 p1 = par_expSeason(phase=-90, pwr=3.5, lift=0) 
 p2 = par_sinSeason(lift=-0.85, pwr=4, phase=0)
 p3 = par_sinSeason(lift=0, pwr=4, phase=-90)
@@ -57,5 +30,4 @@ lines(oneYear, seasonalFoI(oneYear, p2), col = clrs[3], lwd=1.5)
 lines(oneYear, seasonalFoI(oneYear, p3), col = clrs[5], lwd=1.5) 
 lines(oneYear, seasonalFoI(oneYear, p4), col = clrs[6], lwd=2) 
 lines(oneYear, seasonalFoI(oneYear, p5), col = grey(0.5), lwd=1.5)
-```
 

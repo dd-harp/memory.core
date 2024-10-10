@@ -1,38 +1,14 @@
----
-title: "Figure 6"
-subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infection, Parasite Densities, and Detection"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
-output:
-  html_document: 
-    theme: simplex
----
-
-***
-
-[Home](Memory.html) | 
-[Fig 3](Figure3.html) |
-[Fig 4](Figure4.html) |
-[Fig 5](Figure5.html) |
-[Fig 7](Figure7.html) |
-[Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) |
-[Fig 10](Figure10.html)
-
-*** 
-
-# {.tabset}
-
-## $\odot$ 
-
-```{r}
+## -------------------------------------------------------------------------------------------------
 library(ramp.falciparum)
 library(viridisLite)
 library(knitr)
-```
 
 
-```{r}
+## ----eval=F---------------------------------------------------------------------------------------
+## purl("Figure6.Rmd", "Figure6.R")
+
+
+## -------------------------------------------------------------------------------------------------
 clrs = rev(turbo(50))
 
 par(mar = c(5,5,3,5))
@@ -43,11 +19,9 @@ foiP3 = list(hbar = 5/365,
              trendPar = par_flatTrend())
 
 base_pars = par_Fmu_base()
-```
 
-## Figure 6a
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 
 clrs = rev(turbo(100))
 thou = 0:1000
@@ -75,11 +49,9 @@ mtext(expression(list(f[A](alpha), f[Y](alpha))), 4,3)
 
 mtext("a) Expected Logged Parasite Densities, Density of Infections by Age", 3, 1, at = 360, cex=1)
 
-```
 
-## Figure 6b
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 
 
 
@@ -118,11 +90,9 @@ segments(6,0, 6, 0.17, col = grey(0.5), lty=2)
 
 mtext("b) Parasite Density Distributions, Simple Infections", 3, 1, at = 3.3, cex=1)
 
-```
 
-## Figure 6c
 
-```{r}
+## -------------------------------------------------------------------------------------------------
 
 
 cdfPa = cumsum(Pa)
@@ -156,4 +126,4 @@ lines(xx, Ba)
 
 mtext("c) Parasite Density Distributions, Complex Infections", 3, 1, at = 3.5, cex=1)
 
-```
+
