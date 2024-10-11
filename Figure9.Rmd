@@ -4,19 +4,18 @@ subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infectio
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
 output:
-  html_document: 
-    theme: simplex
+  html_document 
 ---
 
 ***
 
 [Home](Memory.html) | 
+[Fig 3](Figure3.html) | 
 [Fig 4](Figure4.html) |
 [Fig 5](Figure5.html) |
 [Fig 6](Figure6.html) |
 [Fig 7](Figure7.html) |
 [Fig 8](Figure8.html) |
-[Fig 9](Figure9.html) | 
 [Fig 10](Figure10.html)
 
 *** 
@@ -24,12 +23,26 @@ output:
 
 ## $\odot$ 
 
+![Figure 9a](Figure9a.png)
+
+![Figure 9b](Figure9b.png)
+
+## Setup
+
+```{r}
+library(ramp.falciparum)
+library(viridisLite)
+```
+
+```{r}
+clrs8d = viridis(8)
+```
+
 ## Fig 9a
 
 ```{r}
 
-clrs8d = viridis(8)
-detectionColorPatch = function(xl=0, xh=13){
+Figure9a = function(xl=0, xh=13){
   
   xl = 0  
   xh = 13  
@@ -67,27 +80,54 @@ detectionColorPatch = function(xl=0, xh=13){
   text(11.4, .25, expression(10^4-10^5), col = "white", cex=ccx, srt = ssrt)
   text(12.1, 0.2, expression(10^5-infinity), col = "white", cex=ccx, srt=ssrt)
   axis(1, 1:12, 1:12)
+  mtext("a) Probability of Detection", 3, 1, at=1)
 }
-detectionColorPatch()
-mtext("a) Probability of Detection", 3, 1, at=1)
+Figure9a()
+```
+```{r}
+png("Figure9a.png", height= 360, width = 720)
+Figure9a()
+invisible(dev.off(dev.cur()))
 ```
 
-
-## Fig 9b
+## Figure 9b 
 
 ```{r}
-pp = par_nb(s=7)
-b2c = d_nz_counts_log_binned(1, bins = c(1:5, 13), pars=pp)
-b2d = 1-d_detect(1,pars=pp)
-b2cl = c(b2d, b2c*(1-b2d))
-plot(3-0.05+c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2], xlim = c(2.5,11.5), xaxt = "n", xlab = expression(log[10](B)), ylab="Proportion") 
-for(i in c(4:11)){
-  b2c = d_nz_counts_log_binned(i,bins = c(1:5, 13), pars=pp)
-  b2d = 1-d_detect(i,pars=pp)
-  b2cl = c(b2d, b2c*(1-b2d)) 
-  lines(i -0.05 + c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2])
-  axis(1, 3:11, 3:11)
+Figure9b = function(){
+  pp = par_nb(s=7)
+  b2c = d_nz_counts_log_binned(1, bins = c(1:5, 13), pars=pp)
+  b2d = 1-d_detect(1,pars=pp)
+  b2cl = c(b2d, b2c*(1-b2d))
+  plot(3-0.05+c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2], xlim = c(2.5,11.5), xaxt = "n", xlab = expression(log[10](B)), ylab="Proportion") 
+  for(i in c(4:11)){
+    b2c = d_nz_counts_log_binned(i,bins = c(1:5, 13), pars=pp)
+    b2d = 1-d_detect(i,pars=pp)
+    b2cl = c(b2d, b2c*(1-b2d)) 
+    lines(i -0.05 + c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2])
+    axis(1, 3:11, 3:11)
+  }
+  mtext("b) Parasite Counts", 3, 1, at=2.9)
 }
-mtext("b) Parasite Counts", 3, 1, at=2.9)
+Figure9b()
 ```
 
+```{r}
+png("Figure9b.png", height= 360, width = 720)
+Figure9b()
+invisible(dev.off(dev.cur()))
+```
+
+## Remake
+
+
+To remake Figure 9, first run this purl script to make `Figure9.R`
+
+```{r, purl=F, eval=F}
+purl("Figure9.Rmd", "Figure9.R")
+```
+
+then source `Figure9.R`
+
+```{r, purl=F, eval=F}
+source("Figure9.R")
+```

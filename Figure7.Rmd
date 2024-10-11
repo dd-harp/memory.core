@@ -4,17 +4,16 @@ subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infectio
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
 output:
-  html_document: 
-    theme: simplex
+  html_document 
 ---
 
 ***
 
 [Home](Memory.html) | 
+[Fig 3](Figure3.html) |
 [Fig 4](Figure4.html) |
 [Fig 5](Figure5.html) |
 [Fig 6](Figure6.html) |
-[Fig 7](Figure7.html) |
 [Fig 8](Figure8.html) |
 [Fig 9](Figure9.html) |
 [Fig 10](Figure10.html)
@@ -24,6 +23,13 @@ output:
 # {.tabset}
 
 ## $\odot$
+
+![Figure 7a](Figure7a.png)
+![Figure 7b](Figure7b.png)
+
+![Figure 7c](Figure7c.png)
+
+## Setup 
 
 ```{r}
 library(ramp.falciparum)
@@ -58,13 +64,20 @@ Psimple = function(h=10/365,  FoIpar=foiP3, r=1/200, tau=0,
   
   list(pd = t(ages), x=a, y=Bmesh)
 }
+```
 
-Psimple() -> simpleP 
 
-nclrs = 50 
-clrs = rev(magma(50))
+```{r}
+Psimple() -> simpleP
+```
 
-with(simpleP, filled.contour(x, y, pd, 
+
+```{r}
+Figure7a = function(simpleP){
+  nclrs = 50 
+  clrs = rev(magma(50))
+
+  with(simpleP, filled.contour(x, y, pd, 
                              xlab = expression(list(a, "Host Cohort Age (in Days)")), 
                              ylab = expression(list(xi, paste("Parasite Densities"))), 
                              xaxt = "n", 
@@ -72,13 +85,20 @@ with(simpleP, filled.contour(x, y, pd,
                              nlevels=nclrs, 
                              col = clrs)) 
 
-mtext("a) Parasite Density Distributions in Simple Infections", 3, 1, at=350)
+  mtext("a) Parasite Density Distributions in Simple Infections", 3, 1, at=350)
+}
+Figure7a(simpleP)
+```
+
+```{r}
+png("Figure7a.png", height= 360, width = 720)
+Figure7a(simpleP)
+invisible(dev.off(dev.cur()))
 ```
 
 ## Fig 7b
 
 ```{r}
-
 Pcomplex = function(h=10/365,  FoIpar=foiP3, r=1/200, tau=0, 
                     Tmax=5*365, alphaMax = 420, dt=5){
   a = seq(40, Tmax, by=10) 
@@ -91,9 +111,16 @@ Pcomplex = function(h=10/365,  FoIpar=foiP3, r=1/200, tau=0,
   
   list(pd = t(ages), x=a, y=Bmesh)
 }
+```
 
-Pcomplex() -> complexP 
 
+```{r}
+Pcomplex() -> complexP
+```
+
+
+```{r}
+Figure7b = function(complexP){
 nclrs = 50 
 clrs = rev(magma(50))
 
@@ -106,15 +133,19 @@ with(complexP, filled.contour(x, y, pd,
                               col = clrs)) 
 
 mtext("b) Parasite Density Distributions in Complex Infections", 3, 1, at=365)
+}
+Figure7b(complexP)
+```
 
+```{r}
+png("Figure7b.png", height= 360, width = 720)
+Figure7b(complexP)
+invisible(dev.off(dev.cur()))
 ```
 
 ## Fig 7c
 
 ```{r}
-
-# complexP is computed in Figure7b.R
-
 CountsSurface = function(dBobj, par=par_nb()){
   surf=dBobj$pd
   a = dBobj$x 
@@ -130,14 +161,20 @@ CountsSurface = function(dBobj, par=par_nb()){
   }
   list(counts=counts, x=a, y=bins) 
 }
+```
 
+
+```{r}
 countsSurf = CountsSurface(complexP)
+```
 
-library(viridisLite)
-nclrs = 41 
-clrs = rev(magma(nclrs))
 
-with(countsSurf, filled.contour(x, y, counts, 
+```{r}
+Figure7c = function(countsSurf){
+  nclrs = 41 
+  clrs = rev(magma(nclrs))
+
+  with(countsSurf, filled.contour(x, y, counts, 
                                 xlab = expression(list(a, "Host Cohort Age (in Days)")), 
                                 ylab = expression(list(hat(xi), log[10](paste("Parasite Counts")))), 
                                 xaxt = "n", 
@@ -145,6 +182,26 @@ with(countsSurf, filled.contour(x, y, counts,
                                 nlevels=nclrs, 
                                 col = clrs)) 
 
-mtext("c) Parasite counts", 3, 1, at=100)
+  mtext("c) Parasite counts", 3, 1, at=100)
+}
+Figure7c(countsSurf)
 ```
 
+```{r}
+png("Figure7c.png", height= 360, width = 720)
+Figure7c(countsSurf)
+invisible(dev.off(dev.cur()))
+```
+
+## Remake
+
+To remake Figure 7, first run this purl script to make Figure7.R
+
+```{r, purl=F, eval=F}
+purl("Figure7.Rmd", "Figure7.R")
+```
+then source Figure7.R
+
+```{r, purl=F, eval=F}
+source("Figure7.R")
+```

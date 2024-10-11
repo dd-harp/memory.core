@@ -1,24 +1,21 @@
-## -------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------
 library(ramp.falciparum)
 library(viridisLite)
 library(knitr)
 
 
-## ----eval=F---------------------------------------------------------------------------------------
-## purl("Figure4.Rmd", "Figure4.R")
 
 
-## -------------------------------------------------------------------------------------------------
+
+
+## ------------------------------------------------------------------------------------------------
 foiP3 = list(hbar = 1, 
              agePar = par_type2Age(), 
              seasonPar = par_sinSeason(), 
              trendPar = par_flatTrend())
 
 
-## -------------------------------------------------------------------------------------------------
-nclrs = 25
-clrs = rev(magma(nclrs))
-
+## ----MoIsurface----------------------------------------------------------------------------------
 MoIsurface = function(h = 10/365, FoIpar=foiP3, r=1/200, tau=0, 
                       Tmax = 5*365, alphaMax = 500, dt=5)
 { 
@@ -35,25 +32,36 @@ MoIsurface = function(h = 10/365, FoIpar=foiP3, r=1/200, tau=0,
   list(moi=t(moi), x=a, y=zeta)
 }
 
+
+## ------------------------------------------------------------------------------------------------
 moiObj = MoIsurface()
 
 
-with(moiObj, filled.contour(x, y, moi, 
-                            xlab = expression(list(a, "Host Cohort Age (in Days)")), 
-                            ylab = expression(f[M](zeta, a)), 
-                            xaxt = "n", 
-                            yaxt = "n", 
-                            nlevels=nclrs, 
-                            col = clrs)) 
+## ------------------------------------------------------------------------------------------------
+Figure4a = function(moiObj){
+  nclrs = 25
+  clrs = rev(magma(nclrs))
+  
+  with(moiObj, filled.contour(x, y, moi, 
+                              xlab = expression(list(a, "Host Cohort Age (in Days)")), 
+                              ylab = expression(f[M](zeta, a)), 
+                              xaxt = "n", 
+                              yaxt = "n", 
+                              nlevels=nclrs, 
+                              col = clrs)) 
+  
+  
+  mtext("a) Multiplicity of Infection (MoI)", 3, 1, at = 220, cex=1)
+}
+Figure4a(moiObj)
+
+## ------------------------------------------------------------------------------------------------
+png("Figure4a.png", height= 360, width = 720)
+Figure4a(moiObj)
+invisible(dev.off(dev.cur()))
 
 
-mtext("a) Multiplicity of Infection (MoI)", 3, 1, at = 220, cex=1)
-
-
-## -------------------------------------------------------------------------------------------------
-nclrs = 29 
-clrs = rev(magma(nclrs))
-
+## ------------------------------------------------------------------------------------------------
 AoIsurface = function(h=10/365, FoIpar=foiP3, r=1/200, tau=0, 
                       Tmax=5*365, alphaMax = 420, dt=5){ 
   alpha = seq(2, alphaMax, by=dt) 
@@ -69,23 +77,38 @@ AoIsurface = function(h=10/365, FoIpar=foiP3, r=1/200, tau=0,
   list(aoi=t(ages), x=a, y=alpha)
 }
 
+
+## ------------------------------------------------------------------------------------------------
 aoiObj = AoIsurface() 
 
-with(aoiObj, filled.contour(x, y, aoi, 
-                            xlab = expression(list(a, "Host Cohort Age (in Days)")), 
-                            ylab = expression(f[A](alpha, a)), 
-                            xaxt = "n", 
-                            yaxt = "n", 
-                            nlevels=nclrs, 
-                            col = clrs)) 
+
+## ------------------------------------------------------------------------------------------------
+Figure4b = function(aoiObj){
+  nclrs = 29 
+  clrs = rev(magma(nclrs))
+  
+  with(aoiObj, filled.contour(x, y, aoi, 
+                              xlab = expression(list(a, "Host Cohort Age (in Days)")), 
+                              ylab = expression(f[A](alpha, a)), 
+                              xaxt = "n", 
+                              yaxt = "n", 
+                              nlevels=nclrs, 
+                              col = clrs)) 
+  
+  
+  mtext("b) Age of Infection (AoI)", 3, 1, at=172, cex=1)
+}
+Figure4b(aoiObj)
 
 
-mtext("b) Age of Infection (AoI)", 3, 1, at=172, cex=1)
+## ------------------------------------------------------------------------------------------------
+png("Figure4b.png", height= 360, width = 720)
+Figure4b(aoiObj)
+invisible(dev.off(dev.cur()))
 
 
-## -------------------------------------------------------------------------------------------------
-nclrs = 29 
-clrs = rev(magma(nclrs))
+## ------------------------------------------------------------------------------------------------
+
 
 AoYsurface = function(h=10/365, FoIpar=foiP3, r=1/200, tau=0, 
                       Tmax=5*365, alphaMax = 420, dt=5){ 
@@ -102,15 +125,31 @@ AoYsurface = function(h=10/365, FoIpar=foiP3, r=1/200, tau=0,
   list(aoy=t(ages), x=a, y=alpha)
 }
 
-aoyObj = AoYsurface() 
 
-with(aoyObj, filled.contour(x, y, aoy, 
-                            xlab = expression(list(a, "Host Cohort Age (in Days)")), 
-                            ylab = expression(f[Y](alpha, a)), 
-                            xaxt = "n", 
-                            yaxt = "n", 
-                            nlevels=nclrs, 
-                            col = clrs))
+## ------------------------------------------------------------------------------------------------
+aoyObj = AoYsurface()
 
-mtext("c) Age of the Youngest Infection (AoY)", 3, 1, at=280, cex=1)
+
+## ------------------------------------------------------------------------------------------------
+Figure4c = function(aoYobj){
+  nclrs = 29 
+  clrs = rev(magma(nclrs))
+  
+  with(aoyObj, filled.contour(x, y, aoy, 
+                              xlab = expression(list(a, "Host Cohort Age (in Days)")), 
+                              ylab = expression(f[Y](alpha, a)), 
+                              xaxt = "n", 
+                              yaxt = "n", 
+                              nlevels=nclrs, 
+                              col = clrs))
+  
+  mtext("c) Age of the Youngest Infection (AoY)", 3, 1, at=280, cex=1)
+}
+Figure4c(aoyObj)
+
+
+## ------------------------------------------------------------------------------------------------
+png("Figure4c.png", height= 360, width = 720)
+Figure4c(aoyObj)
+invisible(dev.off(dev.cur()))
 

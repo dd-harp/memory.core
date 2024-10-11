@@ -4,8 +4,7 @@ subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infectio
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
 output:
-  html_document: 
-    theme: simplex
+  html_document 
 ---
 
 `Figure3.Rmd` 
@@ -23,11 +22,20 @@ output:
 
 *** 
 
+# {.tabset}
+
+## $\odot$ 
+
+![Figure3.png](Figure3.png)
+
+## Setup
+
 ```{r}
 library(ramp.falciparum)
 library(viridisLite)
 ```
 
+## Fig3a 
 
 ```{r}
 clrs = plasma(8)
@@ -38,11 +46,15 @@ par_t2 = par_type2Age()
 a20yearsBy10days=seq(0, 7300, by=10)
 wt1 = ageFoI(a20yearsBy10days, par_type2Age())
 wt2 = ageFoI(a20yearsBy10days, par_flatAge())
+```
 
+
+```{r}
 plot(a20yearsBy10days/365, wt1, type = "l", xlab = "Age in Years", ylab = expression(omega(a)), col = clrs[1])
 lines(a20yearsBy10days/365, wt2, col = clrs[5])
 ```
 
+## Fig3b 
 
 ```{r}
 p1 = par_expSeason(phase=-90, pwr=3.5, lift=0) 
@@ -50,7 +62,10 @@ p2 = par_sinSeason(lift=-0.85, pwr=4, phase=0)
 p3 = par_sinSeason(lift=0, pwr=4, phase=-90)
 p4 = par_sinSeason(phase=-90)
 p5 = par_flatSeason()
+```
 
+
+```{r}
 oneYear = c(0:365)
 plot(oneYear,  seasonalFoI(oneYear, p1), type = "l", ylab = expression(S(t) - paste("Seasonal Pattern")), xlab = "Day of Year", col = clrs[1]) 
 lines(oneYear, seasonalFoI(oneYear, p2), col = clrs[3], lwd=1.5) 
@@ -59,3 +74,13 @@ lines(oneYear, seasonalFoI(oneYear, p4), col = clrs[6], lwd=2)
 lines(oneYear, seasonalFoI(oneYear, p5), col = grey(0.5), lwd=1.5)
 ```
 
+## Remake 
+
+```{r, purl=F, eval=FALSE} 
+print("Making Figure 3")
+purl("Figure3.Rmd", "Figure3.R")
+png("Figure3.png", height= 320, width = 720)
+par(mfrow = c(1,2))
+source("Figure3.R")
+invisible(dev.off(dev.cur()))
+```

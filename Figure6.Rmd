@@ -4,8 +4,7 @@ subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infectio
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
 output:
-  html_document: 
-    theme: simplex
+  html_document 
 ---
 
 ***
@@ -24,6 +23,12 @@ output:
 # {.tabset}
 
 ## $\odot$ 
+
+
+![Figure 6](Figure6.png)
+
+
+## Setup
 
 ```{r}
 library(ramp.falciparum)
@@ -48,7 +53,6 @@ base_pars = par_Fmu_base()
 ## Figure 6a
 
 ```{r}
-
 clrs = rev(turbo(100))
 thou = 0:1000
 daoi <- dAoI(thou, 5*365, foiP3) 
@@ -57,8 +61,10 @@ daoy <- dAoY(thou, 5*365, foiP3)
 mu_alpha =  Fmu(thou, 0, base_pars)
 
 scl =  max(mu_alpha)/max(daoy)
+```
 
 
+```{r}
 plot(thou, mu_alpha, type = "l", ylim = c(0,11),
      xlab = expression(list(alpha, paste("Parasite Age (in Days)"))), 
      ylab = expression(list(F[mu](alpha), paste("Parasite Densities"))))
@@ -80,16 +86,16 @@ mtext("a) Expected Logged Parasite Densities, Density of Infections by Age", 3, 
 ## Figure 6b
 
 ```{r}
-
-
-
 parD = par_Omega_beta()
 
 clrs = rev(turbo(100))
 dt = 0.1
 xx = seq(0, 13, by=dt)
 Pa = d_clone_density(xx, 5*365, foiP3)*dt
+```
 
+
+```{r}
 plot(xx, Pa, type = "l",
      ylab = expression(f[P](xi)),
      xlab = expression(list(xi, paste("Parasite Densities"))))
@@ -123,8 +129,6 @@ mtext("b) Parasite Density Distributions, Simple Infections", 3, 1, at = 3.3, ce
 ## Figure 6c
 
 ```{r}
-
-
 cdfPa = cumsum(Pa)
 cdfPa2 = cdfConvolve2(xx, cdfPa, cdfPa)
 
@@ -142,8 +146,11 @@ Ba = d_parasite_density(xx, 5*365, foiP3, 5/365)
 
 clrs = viridis(12)
 
-xxn1 = xx[-1] - dt/2 
+xxn1 = xx[-1] - dt/2
+```
 
+
+```{r}
 plot(xxn1, diff(cdfPa_by_moi[[10]]), type = "l", col = clrs[10],
      ylab = expression(list(f[P](xi), f[N](xi),f[B](xi), f[bar(B)](xi))),
      xlab = expression(list(xi, paste("Parasite Densities"))))
@@ -157,3 +164,17 @@ lines(xx, Ba)
 mtext("c) Parasite Density Distributions, Complex Infections", 3, 1, at = 3.5, cex=1)
 
 ```
+
+## Remake
+
+```{r, purl=F, eval=F}
+purl("Figure6.Rmd", "Figure6.R")
+```
+
+```{r, purl=F, eval=F}
+png("Figure6.png", height=840, width=560)
+par(mfrow = c(3,1))
+source("Figure6.R")
+invisible(dev.off(dev.cur()))
+```
+

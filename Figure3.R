@@ -6,7 +6,6 @@ library(viridisLite)
 ## -------------------------------------------------------------------------------------------------
 clrs = plasma(8)
 
-par(mfrow = c(1,2))
 
 par_t2 = par_type2Age() 
 
@@ -18,6 +17,7 @@ plot(a20yearsBy10days/365, wt1, type = "l", xlab = "Age in Years", ylab = expres
 lines(a20yearsBy10days/365, wt2, col = clrs[5])
 
 
+## -------------------------------------------------------------------------------------------------
 p1 = par_expSeason(phase=-90, pwr=3.5, lift=0) 
 p2 = par_sinSeason(lift=-0.85, pwr=4, phase=0)
 p3 = par_sinSeason(lift=0, pwr=4, phase=-90)

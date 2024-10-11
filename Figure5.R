@@ -1,13 +1,10 @@
-## ----eval=F---------------------------------------------------------------------------------------
-## purl("Figure5.Rmd", "Figure5.R")
+## -------------------------------------------------------------------------------------------------
+library(ramp.falciparum)
+library(viridisLite)
+library(knitr)
 
 
 ## -------------------------------------------------------------------------------------------------
-
-nclrs = 29 
-clrs = rev(magma(nclrs))
-
-
 alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1){
   alpha = seq(8, 400, by=2) 
   Bmesh = seq(0.1, 12.9, by=0.1)
@@ -20,9 +17,14 @@ alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1){
   list(pd=t(mesh), x=alpha, y=Bmesh)
 }
 
-pdObj = alpha2PD() 
+
+## -------------------------------------------------------------------------------------------------
+pdObj = alpha2PD()
 
 
+## -------------------------------------------------------------------------------------------------
+nclrs = 29 
+clrs = rev(magma(nclrs))
 
 with(pdObj, filled.contour(x, y, pd, 
                            xlab = expression(list(alpha, "Parasite Age (in Days)")), 
@@ -32,4 +34,12 @@ with(pdObj, filled.contour(x, y, pd,
                            nlevels=nclrs, 
                            col = clrs))
 
+
+
+## ----Fig5, eval=FALSE-----------------------------------------------------------------------------
+## print("Making Figure 5")
+## purl("Figure5.Rmd", "Figure5.R")
+## png("Figure5.png", height= 400, width = 720)
+## source("Figure5.R")
+## invisible(dev.off(dev.cur()))
 

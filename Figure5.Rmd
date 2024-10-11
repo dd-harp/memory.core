@@ -4,8 +4,7 @@ subtitle: "A Probabilistic Synthesis of Malaria Epidemiology: Exposure, Infectio
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
 output:
-  html_document: 
-    theme: simplex
+  html_document
 ---
 
 ***
@@ -21,12 +20,29 @@ output:
 
 *** 
 
+# {.tabset}
+
+## $\odot$ 
+
+Figure 5 illustrates the MLE fits: 
+
+[mle.Rmd](mle.html)
+
+![Figure5.png](Figure5.png)
+
+## Setup
+
+
+
 ```{r}
+library(ramp.falciparum)
+library(viridisLite)
+library(knitr)
+```
 
-nclrs = 29 
-clrs = rev(magma(nclrs))
+## Fig 5
 
-
+```{r}
 alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1){
   alpha = seq(8, 400, by=2) 
   Bmesh = seq(0.1, 12.9, by=0.1)
@@ -38,10 +54,17 @@ alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1){
   mesh 
   list(pd=t(mesh), x=alpha, y=Bmesh)
 }
+```
 
-pdObj = alpha2PD() 
+
+```{r}
+pdObj = alpha2PD()
+```
 
 
+```{r}
+nclrs = 29 
+clrs = rev(magma(nclrs))
 
 with(pdObj, filled.contour(x, y, pd, 
                            xlab = expression(list(alpha, "Parasite Age (in Days)")), 
@@ -51,4 +74,17 @@ with(pdObj, filled.contour(x, y, pd,
                            nlevels=nclrs, 
                            col = clrs))
 
+```
+
+## Remake
+
+```{r make Figure5.R, purl=F, eval=FALSE}
+purl("Figure5.Rmd", "Figure5.R")
+```
+
+
+```{r source Figure5.R, purl=F, eval=FALSE}
+png("Figure5.png", height= 400, width = 720)
+source("Figure5.R")
+invisible(dev.off(dev.cur()))
 ```

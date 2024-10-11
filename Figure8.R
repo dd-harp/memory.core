@@ -4,32 +4,30 @@ library(viridisLite)
 library(knitr)
 
 
-## ----eval=F---------------------------------------------------------------------------------------
-## purl("Figure8.Rmd", "Figure8.R")
-
-
 ## -------------------------------------------------------------------------------------------------
 foiP3 = list(hbar = 1, 
              agePar = par_type2Age(), 
              seasonPar = par_sinSeason(), 
              trendPar = par_flatTrend())
 
-## -------------------------------------------------------------------------------------------------
-redo=TRUE
-
 
 ## -------------------------------------------------------------------------------------------------
-if(redo == TRUE){
-  aa = seq(5, 5*365, by = 5)
-  meanP = sapply(aa, moments_clone_density, FoIpar=foiP3, hhat=5/365)
-  meanB = sapply(aa, moments_parasite_density, FoIpar=foiP3, hhat=5/365)
-  write.table(data.frame(P=meanP, B=meanB), "PB.txt")
-}
+aa = seq(5, 5*365, by = 5)
 
+
+## ----eval=F---------------------------------------------------------------------------------------
+## meanP = sapply(aa, moments_clone_density, FoIpar=foiP3, hhat=5/365)
+## meanB = sapply(aa, moments_parasite_density, FoIpar=foiP3, hhat=5/365)
+## write.table(data.frame(P=meanP, B=meanB), "PB.txt")
+
+
+## -------------------------------------------------------------------------------------------------
 PB = read.table("PB.txt")
 meanP = PB$P
 meanB = PB$B
 
+
+## -------------------------------------------------------------------------------------------------
 pFmu = par_Fmu_base()
 solve_dAoYda(5/365, foiP3, Amax=5*365, dt=5) -> hybrid
 tm = hybrid$time
@@ -39,68 +37,19 @@ approxB = Fmu(hybrid$y, 0, pFmu)
 plot(aa, meanB, type = "l", ylim = c(0, 13), col = "darkred", 
      xlab = "a - Cohort Age", 
      ylab = expression(list(xi, paste(log[10], " Parasite Densities"))))
-lines(tm, approxB, col = "salmon3", lwd=2)
+#lines(tm, approxB, col = "salmon3", lwd=2)
 lines(aa, meanP, type = "l", ylim = c(0, 13), col = "darkblue")
 lines(tm, approxP, col = "cyan4")
 mtext("Expected Densities Exactly vs. Hybrid Model Predictions", 3, 1, at=365)
 
 
-## -------------------------------------------------------------------------------------------------
-
-clrs8d = viridis(8)
-detectionColorPatch = function(xl=0, xh=13){
-  
-  xl = 0  
-  xh = 13  
-  meshX=seq(xl,xh,by=0.1)
-  
-  DD <- Detect(meshX, par_sample =par_nb())
-  CB <- t(sapply(meshX, d_counts_binned, bins=c(1:5, 13), par_sample=par_nb()))
-  
-  plot(meshX, CB[,1], type = "n", xlab =expression(log[10](B)), ylab = "Proportion", ylim = c(0,1), col = "white", xlim = c(xl, xh), xaxt = "n")
-  
-  cbi = 1-DD 
-  polygon(c(xl, meshX,13), 1-c(0, cbi,0), col = clrs8d[8], border=clrs8d[8]) 
-  
-  cb0 = cbi
-  cbi = CB[,1]
-  polygon(c(meshX, rev(meshX)), 1-c(cbi, rev(cb0)), col = clrs8d[7], border=clrs8d[7]) 
-  
-  for(i in 2:6){
-    cb0 = cbi
-    cbi = rowSums(CB[,1:i])
-    polygon(c(meshX, rev(meshX)), 1-c(cbi, rev(cb0)), col = clrs8d[8-i], border=clrs8d[8-i]) 
-  }  
-  
-  #cbi = 1-DD 
-  #polygon(c(xl, meshX), 1-c(0, cbi), col = "red", border=clrs8d[8]) 
-  
-  ssrt=62
-  ccx=1.2
-  text(4.5, 0.8, "Parasites not Detected", cex=ccx)
-  
-  text(7.3, .25, expression(1-10), col = "white", cex=ccx, srt = ssrt)
-  text(8.4, .25, expression(10-10^2), col = "white", cex=ccx, srt = ssrt)
-  text(9.4, .25, expression(10^2-10^3), col = "white", cex=ccx, srt = ssrt)
-  text(10.4, 0.25, expression(10^3-10^4), col = "white", cex=ccx, srt = ssrt)
-  text(11.4, .25, expression(10^4-10^5), col = "white", cex=ccx, srt = ssrt)
-  text(12.1, 0.2, expression(10^5-infinity), col = "white", cex=ccx, srt=ssrt)
-  axis(1, 1:12, 1:12)
-}
-detectionColorPatch()
+## ----purl Figure 8, eval=F------------------------------------------------------------------------
+## print("Making Figure 8")
+## purl("Figure8.Rmd", "Figure8.R")
 
 
-
-## -------------------------------------------------------------------------------------------------
-b2c = d_counts_binned(1, bins = c(1:5, 13), par_sample=par_nb())
-b2d = 1-d_detect(1,par_sample=par_nb())
-b2cl = c(b2d, b2c*(1-b2d))
-plot(3-0.05+c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2], xlim = c(2.5,11.5), xaxt = "n", xlab = expression(log[10](B)), ylab="Proportion") 
-for(i in c(4:11)){
-  b2c = d_counts_binned(i,bins = c(1:5, 13), par_sample=par_nb())
-  b2d = 1-d_detect(i,par_sample=par_nb())
-  b2cl = c(b2d, b2c*(1-b2d)) 
-  lines(i -0.05 + c(-3:3)/10, b2cl, type = "h", lwd=5, col = rev(clrs8d)[-2])
-  axis(1, 3:11, 3:11)
-}
+## ----source Figure 8, eval=F----------------------------------------------------------------------
+## png("Figure8.png", height=360, width=540)
+## source("Figure8.R")
+## invisible(dev.off(dev.cur()))
 
