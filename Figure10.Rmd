@@ -20,9 +20,27 @@ output:
 
 *** 
 
+# {.tabset}
+
+## $\odot$
+
+![Figure10.png](Figure10.png)
+
+## Setup 
+
 ```{r}
 library(ramp.falciparum)
+library(viridisLite)
+library(knitr)
 ```
+
+```{r}
+foiP3 = list(hbar = 1, 
+             agePar = par_type2Age(), 
+             seasonPar = par_sinSeason(), 
+             trendPar = par_flatTrend())
+```
+
 
 ```{r}
 foiP3 = list(hbar = 5/365, 
@@ -31,20 +49,27 @@ foiP3 = list(hbar = 5/365,
              trendPar = par_flatTrend())
 ```
 
-## Fig 10a
+```{r}
+aa = seq(5, 5*365, by = 5)
+```
+
+## Fig 10
+
+```{r, eval=F}
+pr = sapply(aa, d_parasite_detect, FoIpar=foiP3)
+PR = data.frame(pr=as.vector(pr))
+write.table(PR, "pr.txt") 
+```
+
 
 ```{r}
-#if(redo == TRUE){
-  aa = seq(5, 5*365, by = 5)
-  pr = sapply(aa, d_parasite_detect, FoIpar=foiP3)
-  PR = data.frame(pr=as.vector(pr))
-#  write.table(PR, "pr.txt") 
-#}
-  
 moi = meanMoI(aa, foiP3)
 
-#pr = read.table("pr.txt")$pr
+pr = read.table("pr.txt")$pr
+```
 
+
+```{r}
 solve_dAoYda(1, foiP3, Amax=5*365, dt=5) -> hybrid
 tm = hybrid$time
 x = hybrid$x[-1]
@@ -62,7 +87,10 @@ for(i in ix){
 xct = pr*(1-exp(-moi)) 
 aprx = 1 - exp(-m*FQx)
 #aprx1 = (1-exp(-m))*FQy
+```
 
+
+```{r}
 plot(aa, xct, type = "l", ylim = c(0,1),
      xlab = "a - Cohort Age",
      ylab = expression(hat(p)[tau](a)))
@@ -76,9 +104,9 @@ lines(aa, aprx, col = "salmon")
 
 ```
 
-## Figure 10a
+## Figure 10 -alt 
 
-```{r}
+```{r, purl=F, eval=F}
 foiP3$hbar = 5/365
 
 thou = 0:730
@@ -99,5 +127,19 @@ mtext(expression(f[A](alpha)), 4, 3)
 
 ```
 
-## Figure 10b
+## Remake 
 
+```{r purl Figure 10, eval=F}
+print("Making Figure 10")
+purl("Figure10.Rmd", "Figure10.R")
+```
+```{r Figure 10, eval=F}
+source("Figure10.R")
+```
+
+
+```{r source Figure 10, eval=F}
+png("Figure10.png", height=360, width=540)
+source("Figure10.R")
+invisible(dev.off(dev.cur()))
+```

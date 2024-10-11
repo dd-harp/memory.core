@@ -61,6 +61,12 @@ To save time, we simply read it in.
 PB = read.table("PB.txt")
 meanP = PB$P
 meanB = PB$B
+PB1 = read.table("PB1.txt")
+meanP1 = PB1$P
+meanB1 = PB1$B
+PB2 = read.table("PB2.txt")
+meanP2 = PB2$P
+meanB2 = PB2$B
 ```
 
 
