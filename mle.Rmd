@@ -97,12 +97,12 @@ F_Sa = function(x){
 In the following, we let $\Omega(\mu)$ be a modified $\beta$ distribution. The variance must be less than $\mu (1-\mu).$  We use the function 
 
 $$ 
-\sigma(\mu) = c_\sigma \mu^{1+b_\sigma}(1-\mu)^{1+a_\sigma}
+\sigma(\mu) = \mu^{1+b_\sigma}(1-\mu)^{1+a_\sigma}
 $$
 
 ```{r}
-F_sigma = function(mu, aa=3.11, bb=2.14, cc=1.74){
-  pmin(abs(cc)*mu^(1+abs(bb))*(1-mu)^(1+abs(aa)), mu*(1-mu)) 
+F_sigma = function(mu, aa=3.11, bb=2.14){
+  pmin(mu^(1+abs(bb))*(1-mu)^(1+abs(aa)), mu*(1-mu)) 
 }
 ```
 
@@ -173,11 +173,10 @@ llik_counts = function(prms, alpha, counts, par_Fmu, par_O, q=6, bvm=13){
   
   par_Fmu$tildeb = F_b(prms[1], bvm)
   par_Fmu$Sa = F_Sa(prms[2])
+  sz=abs(prms[3])
   
-  par_O$pSig$aa=abs(prms[3])
-  par_O$pSig$bb=abs(prms[4])
-  par_O$pSig$cc=abs(prms[5])
-  sz=abs(prms[6])
+  par_O$pSig$aa=abs(prms[4])
+  par_O$pSig$bb=abs(prms[5])
   
   lliks = sapply(1:length(alpha), llik_count_i, 
                  alpha=alpha, counts=counts, 
@@ -199,15 +198,14 @@ counts_MLE = function(alpha, counts, q=6, bvm=13){
   par_Fmu = par_Fmu_base()
   par_O = par_Omega_beta()
   par_O$pSig$cc = 1
-  pinit = c(tildecounts=10.5, Sa=1/30, aa=0.1, bb=0.1, cc=0.1, sz=0.1)
+  pinit = c(tildecounts=10.5, Sa=1/20, sz=0.1, aa=1, bb=0.2) 
   #nlm(countsllik, pinit, alpha=alpha, counts=counts, q=q)
   out = optim(pinit, llik_counts, 
               alpha=alpha, counts=counts, 
               par_Fmu=par_Fmu, par_O=par_O, 
               q=q, bvm=bvm)$par 
   
-  c(F_b(out[1], 13), F_Sa(out[2]), abs(out[3]), abs(out[4]), abs(out[5]), abs(out[6]))
-}
+  c(F_b(out[1], 13), F_Sa(out[2]), abs(out[3]), abs(out[4]), abs(out[5])) }
 ```
 
 
@@ -216,6 +214,6 @@ counts_MLE = function(alpha, counts, q=6, bvm=13){
 Finally,
 
 ```{r Fit it}
-counts_MLE(alpha_list, counts_list) -> fits
-fits
+counts_MLE(alpha_list, counts_list) -> fits2
+rbind(fits, fits1, fits2)
 ```
