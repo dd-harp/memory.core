@@ -204,15 +204,17 @@ counts_MLE = function(alpha, counts, q=6, bvm=13){
   out = optim(pinit, llik_counts, 
               alpha=alpha, counts=counts, 
               par_Fmu=par_Fmu, par_O=par_O, 
-              q=q, bvm=bvm)$par 
+              q=q, bvm=bvm)
+  par = out$par 
+  mle = out$value
   
-  c(F_b(out[1], 13), F_Sa(out[2]), abs(out[3]), abs(out[4]), abs(out[5])) }
+  c(F_b(par[1], 13), F_Sa(par[2]), abs(par[3]), abs(par[4]), abs(par[5]), mle)}
 ```
 
 
 
 ```{r}
-rbind(fits, fits1, fits2)
+counts_MLE(alpha_list, counts_list) -> fits
 ```
 
 Finally,
