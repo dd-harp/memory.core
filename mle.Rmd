@@ -199,12 +199,12 @@ counts_MLE = function(alpha, counts, q=6, bvm=13){
   par_O = par_Omega_beta()
   par_O$pSig$cc = 1
   #pinit = c(tildecounts=10.5, Sa=1/20, sz=0.1, aa=1, bb=0.2) 
-  pinit = c(tildecounts=rnorm(1, 10.5, .5), Sa=rlnorm(1, log(1/20), .1), sz=rnorm(1, 0.1, .1), aa=rnorm(1, 1, .2), bb=rnorm(1, 0.2, .05)) 
+  pinit = c(tildecounts=rnorm(1, 10.25, .2), Sa=rlnorm(1, log(1/300), .1), sz=rnorm(1, 0.25, .1), aa=rnorm(1, 3, .2), bb=rnorm(1, 0.4, .05)) 
   #nlm(countsllik, pinit, alpha=alpha, counts=counts, q=q)
   out = optim(pinit, llik_counts, 
               alpha=alpha, counts=counts, 
               par_Fmu=par_Fmu, par_O=par_O, 
-              q=q, bvm=bvm)
+              q=q, bvm=bvm, method = "SANN")
   par = out$par 
   mle = out$value
   
@@ -212,16 +212,31 @@ counts_MLE = function(alpha, counts, q=6, bvm=13){
 ```
 
 
+Finally,
 
-```{r}
+```{r, eval=F}
 counts_MLE(alpha_list, counts_list) -> fits
 ```
 
-Finally,
 
-```{r Fit it}
+```{r Fit it, eval=F}
 for(i in 1:10){
   counts_MLE(alpha_list, counts_list) -> fits1
   fits <- rbind(fits, fits1)
 } 
 ```
+
+This was run, originally, with and without simulated annealing, and the results were saved to a file. 
+
+```{r, eval=F}
+write.table(fits, "fits.Rtbl")
+```
+
+```{r}
+fits_from_file <- read.table("fits.Rtbl")
+fits_from_file <- data.frame(fits_from_file)
+which.min(fits_from_file$V6) -> ix
+fits_from_file[ix,]
+```
+
+
