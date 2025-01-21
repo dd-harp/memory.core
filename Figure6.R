@@ -1,10 +1,10 @@
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 library(ramp.falciparum)
 library(viridisLite)
 library(knitr)
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 clrs = rev(turbo(50))
 
 par(mar = c(5,5,3,5))
@@ -17,7 +17,7 @@ foiP3 = list(hbar = 5/365,
 base_pars = par_Fmu_base()
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 clrs = rev(turbo(100))
 thou = 0:1000
 daoi <- dAoI(thou, 5*365, foiP3) 
@@ -28,7 +28,7 @@ mu_alpha =  Fmu(thou, 0, base_pars)
 scl =  max(mu_alpha)/max(daoy)
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 plot(thou, mu_alpha, type = "l", ylim = c(0,11),
      xlab = expression(list(alpha, paste("Parasite Age (in Days)"))), 
      ylab = expression(list(F[mu](alpha), paste("Parasite Densities"))))
@@ -47,7 +47,7 @@ mtext("a) Expected Logged Parasite Densities, Density of Infections by Age", 3, 
 
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 parD = par_Omega_beta()
 
 clrs = rev(turbo(100))
@@ -56,7 +56,7 @@ xx = seq(0, 13, by=dt)
 Pa = d_clone_density(xx, 5*365, foiP3)*dt
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 plot(xx, Pa, type = "l",
      ylab = expression(f[P](xi)),
      xlab = expression(list(xi, paste("Parasite Densities"))))
@@ -87,7 +87,7 @@ mtext("b) Parasite Density Distributions, Simple Infections", 3, 1, at = 3.3, ce
 
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cdfPa = cumsum(Pa)
 cdfPa2 = cdfConvolve2(xx, cdfPa, cdfPa)
 
@@ -108,7 +108,7 @@ clrs = viridis(12)
 xxn1 = xx[-1] - dt/2
 
 
-## -----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 plot(xxn1, diff(cdfPa_by_moi[[10]]), type = "l", col = clrs[10],
      ylab = expression(list(f[P](xi), f[N](xi),f[B](xi), f[bar(B)](xi))),
      xlab = expression(list(xi, paste("Parasite Densities"))))
@@ -121,13 +121,4 @@ lines(xx, Ba)
 
 mtext("c) Parasite Density Distributions, Complex Infections", 3, 1, at = 3.5, cex=1)
 
-
-
-## ----eval=F-------------------------------------------------------------------
-## print("Making Figure 6")
-## purl("Figure6.Rmd", "Figure6.R")
-## png("Figure6.png", height=840, width=560)
-## par(mfrow = c(3,1))
-## source("Figure6.R")
-## invisible(dev.off(dev.cur()))
 

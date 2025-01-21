@@ -4,7 +4,7 @@ subtitle: "github archive"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: John M. Henry, Austin R. Carter, Sean L. Wu, and David L. Smith
 params: 
-  remakeFigs: FALSE
+  remakeFigs: TRUE 
 output:
   html_document 
 ---
