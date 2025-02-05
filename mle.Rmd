@@ -4,33 +4,34 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: html_document
 ---
 
-
-
 ```{r, echo=FALSE, purl=FALSE}
 library(knitr)
-library(ramp.falciparum)
 library(deSolve)
 library(viridisLite)
 library(viridis)
 ```
 
+```{r}
+library(ramp.falciparum)
+devtools::load_all("../ramp.falciparum")
+```
+
+In the following, we fit a model to the parasite counts from the malaria-therapy data. This document walks through the MLE algorithm. 
+
 ## Malaria Therapy
 
 We read in the malaria therapy data:  
 
-```{r}
-library(ramp.falciparum)
-```
 
 ```{r}
 malariatherapy = read.csv("MT_PT_NP.csv")
 ```
 
-We create two lists:
+The function `getOne` pulls all the data from a single patient and returns an object with two columns: 
 
-1. The age of infection
+1. `alpha` -- The age of an infection, in days 
 
-2. The parasite counts
+2. `B` -- The parasite count 
 
 ```{r}
 getOne = function(i, dta){
@@ -39,13 +40,21 @@ getOne = function(i, dta){
    cbind(alpha=ix+20, B=dta[ix,i])
 }
 vals = getOne(1, malariatherapy)
+head(vals) 
+```
+We now extract and concatenate all the data into two vectors of paired data: 
 
+1. `alpha_list` is the AoI for all observations 
+
+2. `counts_list` is the observed parasite counts for all observations 
+
+```{r}
 for(i in 2:334) vals = rbind(vals,getOne(i, malariatherapy))
 alpha_list = vals[,1]
 counts_list = vals[,2]
 ```
 
-## MLE 
+## Maximum Likelihood Estimation 
 
 In the following, we present code to fit the parameters for two functions and the observational process: 
 
@@ -55,9 +64,9 @@ In the following, we present code to fit the parameters for two functions and th
 
 3. We assume parasite counts follow a negative binomial distribution. 
 
-### $F_\mu$
+### Expected Densities by AoI 
 
-We let $F_\mu$ be the function
+We let $F_\mu$ be a function that describes expected $\log_{10}$ densities, given the age of infection $\alpha$ 
 
 $$
 F_\mu(\alpha) = 
@@ -67,11 +76,19 @@ F_\mu(\alpha) =
      l + (b - l) e^{-s_\alpha (\alpha-\delta)}   & \mbox{if } \alpha \geq \delta\\  
 \end{cases}
 $$
+In `ramp.falciparum,`  this function is called `Fmu.base.` A function to configure the function is `par_Fmu_base.`
+
+```{r}
+aa = seq(7, 250)
+par1 <- par_Fmu_base()
+plot(aa, Fmu(aa,0, par1), type = "l", xlab = expression(alpha), ylab = expression(F[mu]))
+```
+
 We want to fit values of $s_\alpha$ and $b$
 
 During fitting, random values could lead to nonsensical values, so we write a function $F_b$ to bound the value of $b$: 
 
-```{r constrained b, purl=F}
+```{r F_b}
 F_b = function(x, bvm){
   1.5 + exp(.2*x)/(1+exp(.2*x))*(bvm-3)
 }
@@ -85,14 +102,19 @@ c(F_b(-100, 13),F_b(100, 13))
 
 Similarly, we want to constrain the parameter $s_\alpha$ to be between 0 and 1: 
 
-```{r}
+```{r F_Sa} 
 F_Sa = function(x){
   exp(x)/(1+exp(x))
 }
 ```
 
+```{r}
+c(F_Sa(-100),F_Sa(100))
+```
 
-### $\Omega(\mu)$
+### Parasite Density Distribution Function 
+
+We let $\Omega(\mu)$ denote the density of parasites, given an expected value $\mu.$
 
 In the following, we let $\Omega(\mu)$ be a modified $\beta$ distribution. The variance must be less than $\mu (1-\mu).$  We use the function 
 
@@ -106,118 +128,68 @@ F_sigma = function(mu, aa=3.11, bb=2.14){
 }
 ```
 
+```{r}
+pO <- par_sigma_abc(aa = 3.11, bb=2.14, cc=1)
+pB <- par_Omega_beta(pO)
+```
+
+```{r}
+clrs = turbo(5)
+xi = seq(1, 12, length.out=200)
+plot(xi, d_Omega(xi, 10, par_Omega=pB), type = "l", col = clrs[1], 
+     xlab = expression(xi), 
+     ylab = expression(Omega) )
+lines(xi, d_Omega(xi, 9, par_Omega=pB), col =clrs[2])
+lines(xi, d_Omega(xi, 8, par_Omega=pB), col =clrs[3])
+lines(xi, d_Omega(xi, 7, par_Omega=pB), col =clrs[4])
+lines(xi, d_Omega(xi, 6, par_Omega=pB), col =clrs[5])
+```
+
+
 ### Counts 
 
 Here, we assume the counts follow a negative binomial distribution, parameterized with **mu** and **size**. 
 
-## Likelihood 
+## Sampling 
 
-We write a function to compute the log-likelihoood of a single observation, a pair of observations $\alpha_i$ and a count $\hat \xi_i.$ The probability of the count is a convolution over all possible values of $\xi$: 
+The sampling process happens in two steps: 
+
+1. First, we compute the expected value for the count given the age of the infection.
+
+2. Next, we specify a probability distribution function and compute the likelihood of the observed count.
+
+### Expected Value for the Count
+
+We write a function to compute the log-likelihoood of a single observation, a pair of observations $\alpha_i$ and a count $\hat \xi_i.$ The expected value for the count is a convolution over all possible values of $\xi$: 
 
 $$\int_0^b \Omega(\xi | F_\mu(\alpha_i)) C(\hat \xi_i | \xi) d\xi$$
-The log-likelihood for a single observation is computed using `llik_count` 
 
-+ `count` is the count 
+We write a function to generate an initial set of guesses: 
 
-+ `mu` is the expected value for `xi` 
-
-+ `sz` is the **size** parameter for `dnbinom`
-
-+ `par_O` is a parameter list to dispatch `d_Omega`
-
-+ `q` is the $\log_{10}$ number of RBCc blood sampled 
-
-+ `bvm` is the $\log_{10}$ total number of RBCs 
-
-```{r}
-llik_count = function(count, mu, sz, par_O, q=6, bvm=13){
- 
-  dB = function(xi, count, mu, q, bvm, sz, par_O){
-    pr_xi = d_Omega(xi, mu, bvm, par_O)
-    pr_count = dnbinom(count, mu=10^(xi-q), size=sz)
-    pr_xi*pr_count
-  }
-  
-  lik = integrate(dB, 0, bvm, 
-                  count=count, mu=mu,  
-                  q=q, bvm=bvm, 
-                  sz=sz, par_O=par_O)$value
-  -log(lik)
+```{r pinit}
+pinit = function(){
+  c(tildecounts=rnorm(1, 10.25, .2), 
+    Sa=rlnorm(1, log(1/300), .1), 
+    aa=rnorm(1, 3, .2), 
+    bb=rnorm(1, 0.4, .05))
 }
+pinit() 
 ```
 
-The log-likelihood for all counts is computed with `llik_counts` 
+## Examples
 
-+ `prms` is the set of values 
-
-+ `alpha` is a list of the ages of infection 
-
-+ `counts` is the corresponding list of the counts 
-
-+ `par_Fm` is a parameter list to dispatch `Fmu`
-
-+ `par_O` is a parameter list to dispatch `d_Omega`
-
-+ `q` is the $\log_{10}$ number of RBCc blood sampled 
-
-+ `bvm` is the $\log_{10}$ total number of RBCs 
+Finally, we can do the fits: 
 
 ```{r}
-llik_counts = function(prms, sz, alpha, counts, par_Fmu, par_O, q=6, bvm=13){
-  
-  llik_count_i = function(i, alpha, counts, sz, par_Fmu, par_O, q=6, bvm=13){
-    mu = Fmu(alpha[i], 0, par_Fmu) 
-    llik_count(counts[i], mu, sz, par_O, q, bvm)
-  }
-  
-  
-  par_Fmu$tildeb = F_b(prms[1], bvm)
-  par_Fmu$Sa = F_Sa(prms[2])
-  
-  par_O$pSig$aa=abs(prms[3])
-  par_O$pSig$bb=abs(prms[4])
-  
-  lliks = sapply(1:length(alpha), llik_count_i, 
-                 alpha=alpha, counts=counts, 
-                 sz=sz, par_Fmu=par_Fmu, par_O=par_O, 
-                 q=q, bvm=bvm) 
-  sum(lliks)
-}
+counts_MLE(alpha_list, counts_list, inits=pinit(), 5,  F_b, F_Sa) -> fits1
 ```
-
-
-The maximum likelihood estimation is computed by `counts_MLE` for a paired set set of observations c(`alpha`, `counts`) 
-
-+ `q` is the $\log_{10}$ number of RBCc blood sampled 
-
-+ `bvm` is the $\log_{10}$ total number of RBCs 
-
-```{r}
-counts_MLE = function(alpha, counts, sz, q=6, bvm=13){
-  par_Fmu = par_Fmu_base()
-  par_O = par_Omega_beta()
-  par_O$pSig$cc = 1
-  pinit = c(tildecounts=rnorm(1, 10.25, .2), Sa=rlnorm(1, log(1/300), .1), aa=rnorm(1, 3, .2), bb=rnorm(1, 0.4, .05)) 
-  out = optim(pinit, llik_counts, sz=sz,
-              alpha=alpha, counts=counts, 
-              par_Fmu=par_Fmu, par_O=par_O, 
-#              q=q, bvm=bvm, method = "SANN")
-              q=q, bvm=bvm)
-  par = out$par 
-  mle = out$value
-  
-  c(F_b(par[1], 13), F_Sa(par[2]), abs(par[3]), abs(par[4]), mle)}
-```
-
-
-Finally,
 
 ```{r, eval=F}
-counts_MLE(alpha_list, counts_list, 5) -> fits1
-counts_MLE(alpha_list, counts_list, 2) -> fits2
-counts_MLE(alpha_list, counts_list, 1) -> fits3
-counts_MLE(alpha_list, counts_list, 0.5) -> fits4
-counts_MLE(alpha_list, counts_list, 0.2) -> fits5
+counts_MLE(alpha_list, counts_list, pinit(), 5,   F_b, F_Sa) -> fits1
+counts_MLE(alpha_list, counts_list, pinit(), 2,   F_b, F_Sa) -> fits2
+counts_MLE(alpha_list, counts_list, pinit(), 1,   F_b, F_Sa) -> fits3
+counts_MLE(alpha_list, counts_list, pinit(), 0.5, F_b, F_Sa) -> fits4
+counts_MLE(alpha_list, counts_list, pinit(), 0.2, F_b, F_Sa) -> fits5
 ```
 
 
