@@ -22,8 +22,7 @@ In the following, we fit a model to the parasite counts from the malaria-therapy
 
 We read in the malaria therapy data:  
 
-
-```{r}
+```{r read data}
 malariatherapy = read.csv("MT_PT_NP.csv")
 ```
 
@@ -33,7 +32,7 @@ The function `getOne` pulls all the data from a single patient and returns an ob
 
 2. `B` -- The parasite count 
 
-```{r}
+```{r getOne}
 getOne = function(i, dta){
    ix = which(!is.na(dta[,i]))
    ix = ix[1:max(which(dta[ix,i]>0))]
@@ -48,7 +47,7 @@ We now extract and concatenate all the data into two vectors of paired data:
 
 2. `counts_list` is the observed parasite counts for all observations 
 
-```{r}
+```{r all observations}
 for(i in 2:334) vals = rbind(vals,getOne(i, malariatherapy))
 alpha_list = vals[,1]
 counts_list = vals[,2]
@@ -123,12 +122,6 @@ $$
 $$
 
 ```{r}
-F_sigma = function(mu, aa=3.11, bb=2.14){
-  pmin(mu^(1+abs(bb))*(1-mu)^(1+abs(aa)), mu*(1-mu)) 
-}
-```
-
-```{r}
 pO <- par_sigma_abc(aa = 3.11, bb=2.14, cc=1)
 pB <- par_Omega_beta(pO)
 ```
@@ -181,17 +174,90 @@ pinit()
 Finally, we can do the fits: 
 
 ```{r}
-counts_MLE(alpha_list, counts_list, inits=pinit(), 5,  F_b, F_Sa) -> fits1
+devtools::load_all("../ramp.falciparum")
 ```
 
-```{r, eval=F}
-counts_MLE(alpha_list, counts_list, pinit(), 5,   F_b, F_Sa) -> fits1
-counts_MLE(alpha_list, counts_list, pinit(), 2,   F_b, F_Sa) -> fits2
-counts_MLE(alpha_list, counts_list, pinit(), 1,   F_b, F_Sa) -> fits3
-counts_MLE(alpha_list, counts_list, pinit(), 0.5, F_b, F_Sa) -> fits4
-counts_MLE(alpha_list, counts_list, pinit(), 0.2, F_b, F_Sa) -> fits5
+
+```{r}
+counts_MLE_sz(alpha_list, counts_list, pinit(), 5,   F_b, F_Sa) -> fits1
+counts_MLE_sz(alpha_list, counts_list, pinit(), 2,   F_b, F_Sa) -> fits2
+counts_MLE_sz(alpha_list, counts_list, pinit(), 1,   F_b, F_Sa) -> fits3
+counts_MLE_sz(alpha_list, counts_list, pinit(), 0.5, F_b, F_Sa) -> fits4
+counts_MLE_sz(alpha_list, counts_list, pinit(), 0.2, F_b, F_Sa) -> fits5
 ```
 
+```{r}
+fits1[5] <- 5
+fits2[5] <- 2
+fits3[5] <- 1
+fits4[5] <- 0.5
+fits5[5] <- 0.2
+```
+
+```{r}
+fits <- data.frame(rbind(fits1, fits2, fits3, fits4, fits5)) 
+```
+
+```{r}
+par_F1 = par_Fmu_base(tildeb = fits1[1], Sa=fits1[2])
+par_F2 = par_Fmu_base(tildeb = fits2[1], Sa=fits2[2])
+par_F3 = par_Fmu_base(tildeb = fits3[1], Sa=fits3[2])
+par_F4 = par_Fmu_base(tildeb = fits4[1], Sa=fits4[2])
+par_F5 = par_Fmu_base(tildeb = fits5[1], Sa=fits5[2])
+```
+
+```{r}
+par_O1 = par_Omega_beta(par_sigma_abc(aa=fits1[3], bb=fits1[4]))
+par_O2 = par_Omega_beta(par_sigma_abc(aa=fits2[3], bb=fits2[4]))
+par_O3 = par_Omega_beta(par_sigma_abc(aa=fits3[3], bb=fits3[4]))
+par_O4 = par_Omega_beta(par_sigma_abc(aa=fits4[3], bb=fits4[4]))
+par_O5 = par_Omega_beta(par_sigma_abc(aa=fits5[3], bb=fits5[4]))
+```
+
+```{r}
+alpha2PD() -> pdO 
+alpha2PD(par_Fmu=par_F1, par_Omega = par_O1) -> pdO1 
+alpha2PD(par_Fmu=par_F2, par_Omega = par_O2) -> pdO2 
+alpha2PD(par_Fmu=par_F3, par_Omega = par_O3) -> pdO3 
+alpha2PD(par_Fmu=par_F4, par_Omega = par_O4) -> pdO4 
+alpha2PD(par_Fmu=par_F5, par_Omega = par_O5) -> pdO5 
+```
+
+```{r}
+surfplot = function(nclrs, pdObj){
+  clrs = rev(magma(nclrs))
+
+  with(pdObj, filled.contour(x, y, pd, 
+                           xlab = expression(list(alpha, "Parasite Age (in Days)")), 
+                           ylab = expression(f[P](xi, alpha)), 
+                           xaxt = "n", 
+                           yaxt = "n", 
+                           nlevels=nclrs, 
+                           col = clrs))
+}
+```
+
+```{r}
+surfplot(34, pdO)
+```
+
+```{r}
+surfplot(34, pdO1)
+```
+```{r}
+surfplot(34, pdO2)
+```
+
+```{r}
+surfplot(34, pdO3)
+```
+
+```{r}
+surfplot(34, pdO4)
+```
+```{r}
+surfplot(34, pdO5)
+```
 
 ```{r Fit it, eval=F}
 for(i in 1:10){
@@ -209,8 +275,6 @@ write.table(fits, "fits.Rtbl")
 ```{r}
 fits_from_file <- read.table("fits.Rtbl")
 fits_from_file <- data.frame(fits_from_file)
-which.min(fits_from_file$V6) -> ix
-fits_from_file[ix,]
 ```
 
 

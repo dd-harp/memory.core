@@ -42,13 +42,15 @@ library(knitr)
 
 ## Fig 5
 
+
+
 ```{r}
-alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1){
+alpha2PD = function(r=1/200, tau=0, Tmax=5*365, dt=1, par_Fmu=par_Fmu_base(), par_Omega=par_Omega_beta()){
   alpha = seq(8, 400, by=2) 
   Bmesh = seq(0.1, 12.9, by=0.1)
   mesh = outer(Bmesh, alpha)*0
   for(j in 1:length(alpha)){
-    pd = d_alpha2density(Bmesh, alpha[j], r, parD) 
+    pd = d_alpha2density(Bmesh, alpha[j], par_Fmu=par_Fmu, par_Omega=par_Omega) 
     mesh[,j] = pd
   }
   mesh 
