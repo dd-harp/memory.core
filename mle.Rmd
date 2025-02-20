@@ -13,7 +13,6 @@ library(viridis)
 
 ```{r}
 library(ramp.falciparum)
-devtools::load_all("../ramp.falciparum")
 ```
 
 In the following, we fit a model to the parasite counts from the malaria-therapy data. This document walks through the MLE algorithm. 
@@ -174,11 +173,6 @@ pinit()
 Finally, we can do the fits: 
 
 ```{r}
-devtools::load_all("../ramp.falciparum")
-```
-
-
-```{r}
 counts_MLE_sz(alpha_list, counts_list, pinit(), 5,   F_b, F_Sa) -> fits1
 counts_MLE_sz(alpha_list, counts_list, pinit(), 2,   F_b, F_Sa) -> fits2
 counts_MLE_sz(alpha_list, counts_list, pinit(), 1,   F_b, F_Sa) -> fits3
@@ -212,6 +206,10 @@ par_O2 = par_Omega_beta(par_sigma_abc(aa=fits2[3], bb=fits2[4]))
 par_O3 = par_Omega_beta(par_sigma_abc(aa=fits3[3], bb=fits3[4]))
 par_O4 = par_Omega_beta(par_sigma_abc(aa=fits4[3], bb=fits4[4]))
 par_O5 = par_Omega_beta(par_sigma_abc(aa=fits5[3], bb=fits5[4]))
+```
+
+```{r}
+source("Figure5.R")
 ```
 
 ```{r}
