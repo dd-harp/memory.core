@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
   <diagram id="Wp9XUcJQmJY8cqTNvZHA" name="Page-1">
-    <mxGraphModel dx="1026" dy="687" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="1" shadow="0">
+    <mxGraphModel dx="1114" dy="1192" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -41,10 +41,10 @@
         <mxCell id="PFPhXARDNl8WBqTMMCJW-33" value="Clonal Densities, \(\xi\)&lt;br&gt;&lt;br style=&quot;font-size: 13px&quot;&gt;\( \xi \sim P_\tau(a|h) \)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontStyle=1;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="340" y="450" width="170" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="rnMTsNZ6UDLI-vwBzDie-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;" parent="1" source="PFPhXARDNl8WBqTMMCJW-37" target="yD6WRHwNv5p-mh6DhPKx-2" edge="1">
+        <mxCell id="rnMTsNZ6UDLI-vwBzDie-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="PFPhXARDNl8WBqTMMCJW-37" target="yD6WRHwNv5p-mh6DhPKx-3" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="iFizmelsW-0_QaSh8Ev4-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;" edge="1" parent="1" source="PFPhXARDNl8WBqTMMCJW-37" target="yD6WRHwNv5p-mh6DhPKx-3">
+        <mxCell id="rnMTsNZ6UDLI-vwBzDie-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="PFPhXARDNl8WBqTMMCJW-37" target="yD6WRHwNv5p-mh6DhPKx-2" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="PFPhXARDNl8WBqTMMCJW-37" value="Parasite Densities, \(\xi\)&lt;br style=&quot;font-size: 13px&quot;&gt;&lt;br&gt;\(\xi \sim B_\tau(a|h)\)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontStyle=1;fontSize=13;" parent="1" vertex="1">
@@ -81,15 +81,15 @@
           <mxGeometry x="150" y="500" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="yD6WRHwNv5p-mh6DhPKx-2" value="Counts, \(\hat \xi\)&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;\( \hat \xi \sim \hat B(B) \)&amp;nbsp;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontStyle=1;fontSize=13;spacingBottom=0;align=center;spacing=3;" parent="1" vertex="1">
-          <mxGeometry x="485" y="626" width="157.5" height="80" as="geometry" />
+          <mxGeometry x="556.25" y="626" width="157.5" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="yD6WRHwNv5p-mh6DhPKx-3" value="Observed PR&lt;div&gt;&lt;br&gt;&lt;div&gt;\(\hat p_\tau(p, B)\)&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontStyle=1;fontSize=13;spacingBottom=0;align=center;spacing=3;" parent="1" vertex="1">
-          <mxGeometry x="680" y="626" width="157.5" height="80" as="geometry" />
+        <mxCell id="yD6WRHwNv5p-mh6DhPKx-3" value="Observed PR&lt;div&gt;&lt;br&gt;&lt;div&gt;\(\hat p_\tau(B)\)&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontStyle=1;fontSize=13;spacingBottom=0;align=center;spacing=3;" parent="1" vertex="1">
+          <mxGeometry x="380" y="626" width="157.5" height="80" as="geometry" />
         </mxCell>
         <mxCell id="rnMTsNZ6UDLI-vwBzDie-2" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" source="rnMTsNZ6UDLI-vwBzDie-3" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="100" y="606" as="sourcePoint" />
-            <mxPoint x="870" y="606" as="targetPoint" />
+            <mxPoint x="720" y="606" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="rnMTsNZ6UDLI-vwBzDie-4" value="" style="endArrow=none;dashed=1;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="rnMTsNZ6UDLI-vwBzDie-5" target="rnMTsNZ6UDLI-vwBzDie-3" edge="1">
@@ -103,18 +103,6 @@
         </mxCell>
         <mxCell id="rnMTsNZ6UDLI-vwBzDie-5" value="\(\hat \xi \sim S(B, q,...)\)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="140" y="580" width="140" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="iFizmelsW-0_QaSh8Ev4-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;" edge="1" parent="1" source="PFPhXARDNl8WBqTMMCJW-10" target="iFizmelsW-0_QaSh8Ev4-5">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="714" y="290" as="sourcePoint" />
-            <mxPoint x="798" y="626" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="iFizmelsW-0_QaSh8Ev4-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;" edge="1" parent="1" source="iFizmelsW-0_QaSh8Ev4-5" target="yD6WRHwNv5p-mh6DhPKx-3">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="iFizmelsW-0_QaSh8Ev4-5" value="&lt;div&gt;True PR, \(p\)&lt;br&gt;&lt;br&gt;\(\zeta= 0\)&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontStyle=1;fontSize=13;spacingBottom=0;align=center;spacing=3;" vertex="1" parent="1">
-          <mxGeometry x="680" y="342" width="157.5" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
